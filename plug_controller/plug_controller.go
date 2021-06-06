@@ -2,10 +2,12 @@ package plug_controller
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 type plugController struct {
@@ -78,11 +80,15 @@ func (p *plugController) modifyState(state string, sensorID string) error {
 }
 
 func runCommand(command string) (error, string, string) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
-	cmd := exec.Command("sh", "-c", command)
+	cmd := exec.CommandContext(ctx, "sh", "-c", command)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	err := cmd.Run()
+
 	return err, stdout.String(), stderr.String()
 }
