@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/kelseyhightower/envconfig"
 	"gopkg.in/yaml.v2"
 	"os"
@@ -62,6 +63,8 @@ func main() {
 	)
 
 	server := server.New(config.Server.Port, logger, plugCtrl, infoWriter)
+
+	fmt.Printf("Starting server on port %d\n", config.Server.Port)
 	server.Serve()
 }
 

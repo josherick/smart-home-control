@@ -62,8 +62,8 @@ func (s *server) handleTempOutsideBounds(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	turnOn := turnOnStr == "true"
-	tempFFloat, _ := strconv.ParseFloat(tempC, 64)
-	tempFFloat = tempFFloat*(9/5) + 32
+	tempCFloat, _ := strconv.ParseFloat(tempC, 64)
+	tempFFloat := tempCFloat*(9.0/5.0) + 32
 
 	// Log event
 	var onOffStr = "off"
@@ -71,10 +71,10 @@ func (s *server) handleTempOutsideBounds(w http.ResponseWriter, r *http.Request)
 		onOffStr = "on"
 	}
 	msg := fmt.Sprintf(
-		"[%s] Request to turn %s corresponding plug. Temp: %s C / %f F",
+		"[%s] Request to turn %s corresponding plug. Temp: %.2f C / %.2f F",
 		sensorID,
 		onOffStr,
-		tempC,
+		tempCFloat,
 		tempFFloat,
 	)
 	s.logger.Info(msg)
