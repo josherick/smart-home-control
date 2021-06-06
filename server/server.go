@@ -44,7 +44,7 @@ func New(
 func (s *server) Serve() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/outside_bounds", s.handleTempOutsideBounds)
-	mux.HandleFunc("/logs", s.handleTempOutsideBounds)
+	mux.HandleFunc("/logs", s.getLog)
 	muxWithAccessLogging := s.logger.WrapHandlerWithAccessLog(mux)
 
 	port := fmt.Sprintf(":%d", s.port)
