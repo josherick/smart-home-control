@@ -9,12 +9,10 @@ import (
 )
 
 type plugController struct {
-	kasaDirectory       string
 	sensorIDToPlugIPMap map[string]string
 }
 
 func New(
-	kasaDirectory string,
 	sensors []struct {
 		ID                  string `yaml:"id"`
 		CorrespondingPlugIP string `yaml:"corresponding_plug_ip"`
@@ -25,7 +23,6 @@ func New(
 		sensorIDToPlugIPMap[sensor.ID] = sensor.CorrespondingPlugIP
 	}
 	return &plugController{
-		kasaDirectory,
 		sensorIDToPlugIPMap,
 	}
 }
@@ -47,8 +44,8 @@ func (p *plugController) modifyState(state string, sensorID string) error {
 	}
 
 	// Set the state of the plug.
-	command := fmt.Sprintf("poetry run kasa --host %s --plug %s", plugIP, state)
-	err, stdout, stderr := runCommand(command, p.kasaDirectory)
+	command := fmt.Sprintf("kasa --host %s --plug %s", plugIP, state)
+	err, stdout, stderr := runCommand(command)
 	if err != nil {
 		message := fmt.Sprintf("Failed to turn %s for plug at IP %s for sensor %s with error %s and stderr %s", state, plugIP, sensorID, err.Error(), stderr)
 		return errors.New(message)
@@ -59,8 +56,8 @@ func (p *plugController) modifyState(state string, sensorID string) error {
 	}
 
 	// Validate the state was changed.
-	command = fmt.Sprintf("poetry run kasa --host %s --plug state", plugIP)
-	err, stdout, stderr = runCommand(command, p.kasaDirectory)
+	command = fmt.Sprintf("kasa --host %s --plug state", plugIP)
+	err, stdout, stderr = runCommand(command)
 	if err != nil {
 		message := fmt.Sprintf("Failed to validate state %s for plug at IP %s for sensor %s with error %s and stderr %s", state, plugIP, sensorID, err.Error(), stderr)
 		return errors.New(message)
@@ -80,13 +77,12 @@ func (p *plugController) modifyState(state string, sensorID string) error {
 	return nil
 }
 
-func runCommand(command string, workingDir string) (error, string, string) {
+func runCommand(command string) (error, string, string) {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 	cmd := exec.Command("sh", "-c", command)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
-	cmd.Dir = workingDir
 	err := cmd.Run()
 	return err, stdout.String(), stderr.String()
 }

@@ -13,9 +13,8 @@ import (
 )
 
 type Config struct {
-	KasaDirectory string `yaml:"kasa_dir" envconfig:"KASA_DIR"`
-	SystemName    string `yaml:"system_name" envconfig:"SYSTEM_NAME"`
-	Server        struct {
+	SystemName string `yaml:"system_name" envconfig:"SYSTEM_NAME"`
+	Server     struct {
 		Port int `yaml:"port" envconfig:"SERVER_PORT"`
 	} `yaml:"server"`
 	Logging struct {
@@ -45,7 +44,7 @@ func main() {
 	readFile(&config)
 	readEnv(&config)
 
-	plugCtrl := plug_controller.New(config.KasaDirectory, config.Devices.Sensors)
+	plugCtrl := plug_controller.New(config.Devices.Sensors)
 	mailClient := logger.NewEmailClient(
 		config.Email.From,
 		config.Email.Password,
