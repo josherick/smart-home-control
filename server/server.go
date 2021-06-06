@@ -8,18 +8,18 @@ import (
 	"time"
 )
 
-type Logger interface {
+type logger interface {
 	Info(message string)
 	Critical(message string)
 	CriticalError(err error)
 	WrapHandlerWithAccessLog(mux http.Handler) http.Handler
 }
 
-type InfoLogFilenameProvider interface {
+type infoLogFilenameProvider interface {
 	Filename(t time.Time) string
 }
 
-type PlugController interface {
+type plugController interface {
 	TurnOnCorrespondingPlug(sensorID string) error
 	TurnOffCorrespondingPlug(sensorID string) error
 }
@@ -27,16 +27,16 @@ type PlugController interface {
 type server struct {
 	port int
 
-	logger Logger
-	pc     PlugController
-	fp     InfoLogFilenameProvider
+	logger logger
+	pc     plugController
+	fp     infoLogFilenameProvider
 }
 
 func New(
 	port int,
-	logger Logger,
-	pc PlugController,
-	fp InfoLogFilenameProvider,
+	logger logger,
+	pc plugController,
+	fp infoLogFilenameProvider,
 ) *server {
 	return &server{port, logger, pc, fp}
 }
